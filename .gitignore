@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+StayMemo.app/
+.DS_Store
+.claude/
+icon.iconset/
