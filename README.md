@@ -28,6 +28,16 @@ macOSのメニューバーに常駐するシンプルなメモアプリです。
 
 - macOS 14 (Sonoma) 以降
 
+## インストール
+
+[Releases](https://github.com/Shinichi-Ohki/stay_memo/releases) から `StayMemo.app.zip` をダウンロードして展開してください。
+
+署名なしアプリのため、初回実行前に以下のコマンドで隔離属性を解除する必要があります:
+
+```bash
+xattr -rc StayMemo.app
+```
+
 ## ビルド方法
 
 Xcode GUIは不要です。コマンドラインでビルドできます。
