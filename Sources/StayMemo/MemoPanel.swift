@@ -3,6 +3,7 @@ import SwiftUI
 
 class MemoPanel: NSPanel {
     private let store = MemoStore.shared
+    private var globalClickMonitor: Any?
 
     init() {
         let width: CGFloat = 360
@@ -23,6 +24,7 @@ class MemoPanel: NSPanel {
         titleVisibility = .hidden
         animationBehavior = .utilityWindow
         isReleasedWhenClosed = false
+        hidesOnDeactivate = false
 
         // Restore saved frame
         if let frameStr = UserDefaults.standard.string(forKey: "memo_windowFrame"),
@@ -37,30 +39,57 @@ class MemoPanel: NSPanel {
         contentView = hostView
 
         updatePinState()
-    }
 
-    func updatePinState() {
-        let pinned = store.isPinned
-        if pinned {
-            level = .floating
-            hidesOnDeactivate = false
-        } else {
-            level = .floating
-            hidesOnDeactivate = true
+        // Global monitor: always active, checks visibility/pin in callback
+        globalClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+            guard let self = self, self.isVisible, !self.store.isPinned else { return }
+            self.dismiss()
         }
     }
 
-    override func resignKey() {
-        super.resignKey()
-        if !store.isPinned {
-            close()
+    deinit {
+        if let monitor = globalClickMonitor {
+            NSEvent.removeMonitor(monitor)
         }
+    }
+
+    /// Hide the panel without closing, preserving frame and forcing text redraw on reopen
+    func dismiss() {
+        saveFrame()
+        // Clear text selection without changing first responder
+        clearTextSelection(in: contentView)
+        orderOut(nil)
+    }
+
+    func clearTextSelection() {
+        clearTextSelection(in: contentView)
+    }
+
+    private func clearTextSelection(in view: NSView?) {
+        guard let view = view else { return }
+        if let textView = view as? NSTextView {
+            textView.setSelectedRange(NSRange(location: textView.selectedRange().location, length: 0))
+        }
+        for subview in view.subviews {
+            clearTextSelection(in: subview)
+        }
+    }
+
+    func saveFrame() {
+        UserDefaults.standard.set(NSStringFromRect(frame), forKey: "memo_windowFrame")
     }
 
     override func close() {
-        // Save window frame before closing
-        UserDefaults.standard.set(NSStringFromRect(frame), forKey: "memo_windowFrame")
+        saveFrame()
         super.close()
+    }
+
+    func updatePinState() {
+        if store.isPinned {
+            level = .floating
+        } else {
+            level = .floating
+        }
     }
 
     override var canBecomeKey: Bool { true }

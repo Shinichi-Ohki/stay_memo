@@ -10,6 +10,7 @@ struct MemoView: View {
             HStack(spacing: 4) {
                 ForEach(0..<3) { index in
                     Button(action: {
+                        panel?.clearTextSelection()
                         store.currentPage = index
                         store.save()
                     }) {
