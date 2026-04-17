@@ -27,6 +27,17 @@ struct MemoView: View {
                 Spacer()
 
                 Button(action: {
+                    store.showInvisibles.toggle()
+                    store.save()
+                }) {
+                    Image(systemName: "paragraphsign")
+                        .font(.system(size: 12))
+                        .foregroundColor(store.showInvisibles ? .accentColor : .secondary)
+                }
+                .buttonStyle(.plain)
+                .help(store.showInvisibles ? "非表示文字を隠す" : "非表示文字を表示")
+
+                Button(action: {
                     store.isPinned.toggle()
                     store.save()
                     panel?.updatePinState()
@@ -50,7 +61,9 @@ struct MemoView: View {
                     get: { store.currentText },
                     set: { store.currentText = $0 }
                 ),
-                font: store.font
+                font: store.font,
+                showInvisibles: store.showInvisibles,
+                invisiblesColor: store.invisiblesNSColor
             )
         }
         .frame(minWidth: 250, minHeight: 150)

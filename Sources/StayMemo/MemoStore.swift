@@ -10,6 +10,16 @@ final class MemoStore {
     var isPinned: Bool = false
     var fontName: String = "Menlo"
     var fontSize: Double = 14
+    var showInvisibles: Bool = false
+    var invisiblesColorRed: Double = 0.6
+    var invisiblesColorGreen: Double = 0.6
+    var invisiblesColorBlue: Double = 0.6
+    var invisiblesColorAlpha: Double = 0.8
+
+    var invisiblesNSColor: NSColor {
+        NSColor(red: invisiblesColorRed, green: invisiblesColorGreen,
+                blue: invisiblesColorBlue, alpha: invisiblesColorAlpha)
+    }
 
     var currentText: String {
         get { pages[currentPage] }
@@ -35,6 +45,11 @@ final class MemoStore {
         defaults.set(isPinned, forKey: "memo_isPinned")
         defaults.set(fontName, forKey: "memo_fontName")
         defaults.set(fontSize, forKey: "memo_fontSize")
+        defaults.set(showInvisibles, forKey: "memo_showInvisibles")
+        defaults.set(invisiblesColorRed,   forKey: "memo_invisiblesR")
+        defaults.set(invisiblesColorGreen, forKey: "memo_invisiblesG")
+        defaults.set(invisiblesColorBlue,  forKey: "memo_invisiblesB")
+        defaults.set(invisiblesColorAlpha, forKey: "memo_invisiblesA")
     }
 
     private func load() {
@@ -51,5 +66,16 @@ final class MemoStore {
         }
         let size = defaults.double(forKey: "memo_fontSize")
         if size > 0 { fontSize = size }
+        showInvisibles = defaults.bool(forKey: "memo_showInvisibles")
+        let r = defaults.double(forKey: "memo_invisiblesR")
+        let g = defaults.double(forKey: "memo_invisiblesG")
+        let b = defaults.double(forKey: "memo_invisiblesB")
+        let a = defaults.double(forKey: "memo_invisiblesA")
+        if r > 0 || g > 0 || b > 0 || a > 0 {
+            invisiblesColorRed   = r
+            invisiblesColorGreen = g
+            invisiblesColorBlue  = b
+            invisiblesColorAlpha = a > 0 ? a : 0.8
+        }
     }
 }

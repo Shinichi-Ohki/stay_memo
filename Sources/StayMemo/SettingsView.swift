@@ -42,6 +42,39 @@ struct SettingsView: View {
                 }
             }
 
+            Section("非表示文字") {
+                Toggle("非表示文字を表示", isOn: Binding(
+                    get: { store.showInvisibles },
+                    set: { store.showInvisibles = $0; store.save() }
+                ))
+
+                ColorPicker("表示色", selection: Binding(
+                    get: {
+                        Color(red: store.invisiblesColorRed,
+                              green: store.invisiblesColorGreen,
+                              blue: store.invisiblesColorBlue,
+                              opacity: store.invisiblesColorAlpha)
+                    },
+                    set: { newColor in
+                        if let c = NSColor(newColor).usingColorSpace(.sRGB) {
+                            store.invisiblesColorRed   = Double(c.redComponent)
+                            store.invisiblesColorGreen = Double(c.greenComponent)
+                            store.invisiblesColorBlue  = Double(c.blueComponent)
+                            store.invisiblesColorAlpha = Double(c.alphaComponent)
+                            store.save()
+                        }
+                    }
+                ))
+
+                HStack(spacing: 16) {
+                    ForEach(["スペース: ·", "タブ: →", "改行: ¶"], id: \.self) { label in
+                        Text(label)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
             Section("プレビュー") {
                 Text("あいうえお ABCDE 12345")
                     .font(.custom(store.fontName, size: store.fontSize))
@@ -66,7 +99,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 350, height: 300)
+        .frame(width: 380, height: 440)
         .onAppear {
             availableFonts = NSFontManager.shared.availableFontFamilies.sorted()
         }
