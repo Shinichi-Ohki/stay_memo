@@ -99,7 +99,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 380, height: 440)
+        .frame(width: 380)
         .onAppear {
             availableFonts = NSFontManager.shared.availableFontFamilies.sorted()
         }

@@ -81,14 +81,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let window = settingsWindow {
             window.makeKeyAndOrderFront(nil)
         } else {
+            let hostingView = NSHostingView(rootView: SettingsView())
+            hostingView.layoutSubtreeIfNeeded()
+            let size = hostingView.fittingSize
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 350, height: 300),
+                contentRect: NSRect(x: 0, y: 0, width: size.width,
+                                    height: size.height + 4),
                 styleMask: [.titled, .closable],
                 backing: .buffered,
                 defer: false
             )
             window.title = "StayMemo 設定"
-            window.contentView = NSHostingView(rootView: SettingsView())
+            window.contentView = hostingView
             window.center()
             window.isReleasedWhenClosed = false
             window.makeKeyAndOrderFront(nil)
